@@ -8,7 +8,7 @@ $ cd whatdigit
 $ pip install -r requirements.txt
 $ uvicorn main:app
 ```
-and be patient becouse start will take a moment
+and be patient as the program takes some time to run
 <br><br>
 
 <img src='docs/digit.gif'>
