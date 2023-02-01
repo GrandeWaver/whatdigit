@@ -8,7 +8,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 def create_model():
-    mnist = fetch_openml('mnist_784', version=1, cache=True, parser='auto')
+    mnist = fetch_openml('mnist_784', version=1, cache=True)
     mnist.target = mnist.target.astype(np.int8) # fetch_openml() returns targets as strings
     X, y = mnist['data'], mnist['target']
     
