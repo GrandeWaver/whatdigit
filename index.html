@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+    body {
+    background: #bdbdbd;
+    color: #ffffff;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
+    }
+
+    #canvas {
+    cursor: pointer;
+    }
+
+    #guide {
+    display: grid;
+    pointer-events: none;
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    #guide div {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    button{
+      border: none;
+      padding: 16px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      transition-duration: 0.4s;
+      cursor: pointer;
+    }
+
+    .clear {
+      background-color: #e7e7e7;
+      color: #000000;
+    }
+
+    .check {
+      background-color: #000000;
+      color: white;
+    }
+
+    #answer{
+      margin: 20px;
+      font-size: larger;
+      font-weight: 700;
+    }
+    </style>
+
+      <div id="guide"></div>
+      <canvas width="450" height="450" id="canvas"></canvas>
+      <br>
+
+      <label for="toggleGuide">Pokaż siatkę: </label>
+      <input type="checkbox" id="toggleGuide" checked>
+      <br>
+
+      <button type="button" class="clear" id="clearButton">Wyczyść</button>
+      <br>
+
+      <button type="button" class="check" id="checkButton">Sprawdź</button>
+      <br>
+
+      <div id="answer"></div>
+    <script>
+
+const canvas = document.getElementById("canvas");
+const guide = document.getElementById("guide");
+const toggleGuide = document.getElementById("toggleGuide");
+const clearButton = document.getElementById("clearButton");
+const answer = document.getElementById("answer");
+const drawingContext = canvas.getContext("2d");
+
+const CELL_SIDE_COUNT = 28;
+const cellPixelLength = canvas.width / CELL_SIDE_COUNT;
+let map = Array(CELL_SIDE_COUNT*CELL_SIDE_COUNT).fill(0)
+
+// Initialize the canvas background
+drawingContext.fillStyle = "#ffffff";
+drawingContext.fillRect(0, 0, canvas.width, canvas.height);
+
+// Setup the guide
+{
+  guide.style.width = `${canvas.width}px`;
+  guide.style.height = `${canvas.height}px`;
+  guide.style.gridTemplateColumns = `repeat(${CELL_SIDE_COUNT}, 1fr)`;
+  guide.style.gridTemplateRows = `repeat(${CELL_SIDE_COUNT}, 1fr)`;
+
+  [...Array(CELL_SIDE_COUNT ** 2)].forEach(() =>
+    guide.insertAdjacentHTML("beforeend", "<div></div>")
+  );
+}
+
+function handleCanvasMousedown(e){
+    canvas.addEventListener("mousemove", handleCanvasPrint);
+}
+
+function handleCanvasMouseUp(e){
+    canvas.removeEventListener("mousemove", handleCanvasPrint);
+}
+
+function handleCanvasPrint(e) {
+  // Ensure user is using their primary mouse button
+  if (e.button !== 0) {
+    return;
+  }
+
+  const canvasBoundingRect = canvas.getBoundingClientRect();
+  const x = e.clientX - canvasBoundingRect.left;
+  const y = e.clientY - canvasBoundingRect.top;
+  const cellX = Math.floor(x / cellPixelLength);
+  const cellY = Math.floor(y / cellPixelLength);
+
+  fillCell(cellX+1, cellY-1);
+  fillCell(cellX, cellY);
+  fillCell(cellX+1, cellY-1);
+  fillCell(cellX, cellY);
+}
+
+function handleClearButtonClick() {
+  map = Array(CELL_SIDE_COUNT*CELL_SIDE_COUNT).fill(0)
+  drawingContext.fillStyle = "#ffffff";
+  drawingContext.fillRect(0, 0, canvas.width, canvas.height);
+
+  answer.innerHTML = "";
+}
+
+function handleToggleGuideChange() {
+  guide.style.display = toggleGuide.checked ? null : "none";
+}
+
+function fillCell(cellX, cellY) {
+  const startX = cellX * cellPixelLength;
+  const startY = cellY * cellPixelLength;
+
+  drawingContext.fillStyle = "#000000"
+  drawingContext.fillRect(startX, startY, cellPixelLength, cellPixelLength);
+
+  map[CELL_SIDE_COUNT*cellY+cellX] = 255
+}
+
+function check(){
+    fetch('/api', {
+    method: 'POST', 
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(map),
+    })
+    .then((response) => response.json())
+    .then((data) => answer.innerHTML = data.response);
+}
+
+
+canvas.addEventListener("mousedown", handleCanvasMousedown);
+canvas.addEventListener("mouseup", handleCanvasMouseUp);
+
+clearButton.addEventListener("click", handleClearButtonClick);
+toggleGuide.addEventListener("change", handleToggleGuideChange);
+
+checkButton.addEventListener("click", check);
+
+    </script>
+</body>
+</html>
