@@ -1,7 +1,7 @@
 # whatdigit
 ```
-git clone https://github.com/GrandeWaver/whatdigit.git
-cd whatdigit
+$ git clone https://github.com/GrandeWaver/whatdigit.git
+$ cd whatdigit
 ```
 
 ```
