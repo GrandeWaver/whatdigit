@@ -1,5 +1,6 @@
 # whatdigit
 <h2>AI (RandomForestClassifier) guesses what digit you type</h2>
+
 ```
 $ git clone https://github.com/GrandeWaver/whatdigit.git
 $ cd whatdigit
