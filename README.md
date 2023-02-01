@@ -1,7 +1,7 @@
 # whatdigit
 
 ```
-$ pip install -r reqirements.txt
+$ pip install -r requirements.txt
 $ uvicorn main:app
 ```
 and be patient becouse start will take a moment
