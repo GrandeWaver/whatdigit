@@ -23,6 +23,7 @@ python-dateutil
 pytz
 scikit-learn
 scipy
+sklearn
 six
 sniffio
 starlette
